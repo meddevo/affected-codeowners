@@ -41,7 +41,7 @@ export class GitHubService {
       return changedFiles;
     } catch (error) {
       console.error('Failed to list changed files:', error);
-      throw new Error('Failed to retrieve files.');
+      throw new Error('Failed to retrieve files.', { cause: error });
     }
   }
 
@@ -111,7 +111,7 @@ export class GitHubService {
       return { lines: [], location: null };
     } catch (error) {
       console.log('Failed to get codeowners errors:', error);
-      throw new Error('Failed getCodeownersErrors().');
+      throw new Error('Failed getCodeownersErrors().', { cause: error });
     }
   }
 

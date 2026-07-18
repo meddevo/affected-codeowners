@@ -43,7 +43,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: List affected code owners
         uses: meddevo/affected-codeowners@v2
@@ -105,7 +105,7 @@ With the following `CODEOWNERS` file:
 The action will produce the following outputs:
 
 - **Individual Owners**  
-   All affected code owners, deduplicated:
+  All affected code owners, deduplicated:
 
   ```json
   ["@team-a", "@user1", "@team-c", "@user2", "@user3", "@team-b", "@team-maintainers"]
