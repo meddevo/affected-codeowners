@@ -2,16 +2,16 @@
   "name": "affected-codeowners",
   "description": "GitHub Action to determine which `CODEOWNERS` are affected based on changes in a pull request.",
   "version": "2.0.0",
-  "author": "dytab",
+  "author": "meddevo",
   "type": "module",
   "private": true,
-  "homepage": "https://github.com/dytab/affected-codeowners",
+  "homepage": "https://github.com/meddevo/affected-codeowners",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dytab/affected-codeowners.git"
+    "url": "git+https://github.com/meddevo/affected-codeowners.git"
   },
   "bugs": {
-    "url": "https://github.com/dytab/affected-codeowners/issues"
+    "url": "https://github.com/meddevo/affected-codeowners/issues"
   },
   "keywords": [
     "github",

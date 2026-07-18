@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: List affected code owners
-        uses: dytab/affected-codeowners@v1
+        uses: meddevo/affected-codeowners@v2
         id: affected-codeowners
 
       - name: Output affected code owners
