@@ -1,7 +1,7 @@
 {
   "name": "affected-codeowners",
   "description": "GitHub Action to determine which `CODEOWNERS` are affected based on changes in a pull request.",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "dytab",
   "type": "module",
   "private": true,
@@ -23,7 +23,7 @@
     ".": "./dist/index.js"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "scripts": {
     "bundle": "npm run format:write && npm run package",
@@ -52,7 +52,7 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.1",
     "@types/jest": "^29.5.14",
-    "@types/node": "^20.17.19",
+    "@types/node": "^24.0.0",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
     "eslint": "^9.20.1",
@@ -76,6 +76,6 @@
     "@rollup/rollup-linux-x64-gnu": "*"
   },
   "volta": {
-    "node": "20.18.3"
+    "node": "24.18.0"
   }
 }

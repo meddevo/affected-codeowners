@@ -47,6 +47,8 @@ jobs:
   test-action:
     name: GitHub Actions Test
     runs-on: ubuntu-latest
+    # The action only runs on pull requests; skip on push to main
+    if: github.event_name == 'pull_request'
 
     steps:
       - name: Checkout
@@ -65,6 +67,8 @@ jobs:
 
   release-action:
     needs: test-typescript
+    # Only release on push to main, not on pull requests
+    if: github.event_name == 'push'
     permissions:
       contents: write
     name: Release
