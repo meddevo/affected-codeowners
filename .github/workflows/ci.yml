@@ -40,6 +40,10 @@ jobs:
         id: npm-lint
         run: npm run lint
 
+      - name: Typecheck
+        id: npm-typecheck
+        run: npm run typecheck
+
       - name: Test
         id: npm-test
         run: npm run test
