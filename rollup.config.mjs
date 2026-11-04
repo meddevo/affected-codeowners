@@ -6,6 +6,7 @@ import typescript from '@rollup/plugin-typescript';
 import terser from '@rollup/plugin-terser';
 import del from 'rollup-plugin-delete';
 
+/** @type {import('rollup').RollupOptions} */
 const config = {
   input: 'src/index.ts',
   output: {

@@ -21,9 +21,10 @@ export default {
   // },
   extensionsToTreatAsEsm: ['.ts'],
   moduleFileExtensions: ['ts', 'js'],
+  // Resolve NodeNext-style `./foo.js` imports to `./foo.ts`
+  moduleNameMapper: { '^(\\.{1,2}/.*)\\.js$': '$1' },
   preset: 'ts-jest',
   reporters: ['default'],
-  resolver: 'ts-jest-resolver',
   testEnvironment: 'node',
   testMatch: ['**/*.test.ts'],
   testPathIgnorePatterns: ['/dist/', '/node_modules/'],
@@ -31,7 +32,7 @@ export default {
     '^.+\\.ts$': [
       'ts-jest',
       {
-        tsconfig: 'tsconfig.eslint.json',
+        tsconfig: 'tsconfig.json',
         useESM: true,
       },
     ],
