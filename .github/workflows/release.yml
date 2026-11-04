@@ -68,9 +68,21 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Pushes without a version bump (e.g. dependency updates) must not fail
+      # the release: skip when the tag already exists, unless overwriting
+      - name: Check Version
+        id: version
+        run: |
+          version="v$(jq -r .version package.json)"
+          if git rev-parse -q --verify "refs/tags/$version" >/dev/null; then
+            echo "$version already released, skipping"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          fi
+
       # Get the version and update the tags to use in the release
       - name: Tag Commit
         id: tag-commit
+        if: steps.version.outputs.exists != 'true' || github.event.inputs.tag_overwrite == 'true'
         uses: issue-ops/semver@v3
         with:
           manifest-path: package.json
@@ -80,6 +92,7 @@ jobs:
       # Prepends a 'v' to the beginning (e.g. 'v1.2.3')
       - name: Create Release
         id: create-release
+        if: steps.tag-commit.outcome == 'success'
         uses: issue-ops/releaser@v3
         with:
           tag: v${{ steps.tag-commit.outputs.version }}
