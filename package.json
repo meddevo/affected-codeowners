@@ -1,7 +1,7 @@
 {
   "name": "affected-codeowners",
   "description": "GitHub Action to determine which `CODEOWNERS` are affected based on changes in a pull request.",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "author": "meddevo",
   "type": "module",
   "private": true,
