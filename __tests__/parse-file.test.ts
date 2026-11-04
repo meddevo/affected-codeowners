@@ -52,6 +52,37 @@ describe('parseFile', () => {
     ]);
   });
 
+  it('should parse a file with an empty overwrite', () => {
+    const input =
+      '# CODEOWNERS rules\n' +
+      '/libs/workspace @user1\n' +
+      '/libs/writer @user2\n' +
+      '/libs/**/package.json\n';
+
+    const output = parseFile(input, []);
+
+    expect(output).toEqual([
+      {
+        lineNumber: 4,
+        owners: [],
+        pattern: '/libs/**/package.json',
+        regexPattern: /^libs(?:\/.+)?\/package\.json(?:\/.*)?$/,
+      },
+      {
+        lineNumber: 3,
+        owners: ['@user2'],
+        pattern: '/libs/writer',
+        regexPattern: /^libs\/writer(?:\/.*)?$/,
+      },
+      {
+        lineNumber: 2,
+        owners: ['@user1'],
+        pattern: '/libs/workspace',
+        regexPattern: /^libs\/workspace(?:\/.*)?$/,
+      },
+    ]);
+  });
+
   it('should parse space correctly', () => {
     const input = 'hello/wo\\ rld @owner1';
     const output = parseFile(input, []);

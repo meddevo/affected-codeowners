@@ -148,6 +148,31 @@ describe('findMatchingCodeOwners', () => {
     });
   });
 
+  it('should return no owners for an empty overwrite', () => {
+    const changedFilePaths = ['libs/workspace/feature/frontend/package.json'];
+    const ruleset = [
+      {
+        lineNumber: 3,
+        owners: [],
+        pattern: '/libs/**/package.json',
+        regexPattern: /^libs(?:\/.+)?\/package\.json(?:\/.*)?$/,
+      },
+      {
+        lineNumber: 2,
+        owners: ['@user1'],
+        pattern: '/libs/workspace',
+        regexPattern: /^libs\/workspace(?:\/.*)?$/,
+      },
+    ];
+
+    const result = findMatchingCodeOwners(changedFilePaths, ruleset);
+
+    expect(result).toEqual({
+      grouped: [],
+      individual: [],
+    });
+  });
+
   it('should return the owners for a matching file path with a simple rule', () => {
     const changedFilePaths = ['src/utils/helpers.ts'];
     const ruleset = [

@@ -1,11 +1,14 @@
+import { warning } from '@actions/core';
 import { context, getOctokit } from '@actions/github';
-import type { GitHub } from '@actions/github/lib/utils.js';
+
+// Hard cap of the "list pull request files" endpoint
+const MAX_LISTED_FILES = 3000;
 
 export class GitHubService {
   private context: typeof context;
   private readonly owner: string;
   private readonly repo: string;
-  private octokit: InstanceType<typeof GitHub>;
+  private octokit: ReturnType<typeof getOctokit>;
   private readonly pullNumber: number;
   private readonly baseBranch: string;
 
@@ -38,6 +41,12 @@ export class GitHubService {
         }
       }
 
+      if (changedFiles.length >= MAX_LISTED_FILES) {
+        warning(
+          `GitHub lists at most ${MAX_LISTED_FILES} changed files per pull request; owners of files beyond that are missing.`
+        );
+      }
+
       return changedFiles;
     } catch (error) {
       console.error('Failed to list changed files:', error);
@@ -56,39 +65,41 @@ export class GitHubService {
     ];
 
     for (const location of CODEOWNERS_LOCATIONS) {
+      let data;
       try {
-        const response = await this.octokit.rest.repos.getContent({
+        ({ data } = await this.octokit.rest.repos.getContent({
           owner: this.owner,
           repo: this.repo,
           path: location,
           ref: this.baseBranch,
-        });
-
-        if (
-          'type' in response.data &&
-          response.data.type === 'file' &&
-          response.data.content
-        ) {
-          if (location !== response.data.path) {
-            console.log(
-              `Found CODEOWNERS file at ${response.data.path} in ${this.baseBranch}, but expected ${location}`
-            );
-          }
-
-          return {
-            content: Buffer.from(response.data.content, 'base64').toString(),
-            location: response.data.path,
-          };
-        }
+        }));
       } catch (error) {
-        if (
-          error instanceof Error &&
-          'status' in error &&
-          error.status !== 404
-        ) {
-          console.log(error);
-        }
+        // Only "not found" means "try the next location"; anything else
+        // (403, 5xx, rate limit) would otherwise silently pick the wrong file
+        if ((error as { status?: number }).status === 404) continue;
+        throw error;
       }
+
+      // An empty file still counts: GitHub uses it, so it must not fall through
+      if (!('type' in data) || data.type !== 'file') continue;
+
+      // The contents API omits content above 1 MB; GitHub allows up to 3 MB
+      if (data.encoding === 'none') {
+        throw new Error(
+          `CODEOWNERS file at ${data.path} is too large to read (over 1 MB)`
+        );
+      }
+
+      if (location !== data.path) {
+        console.log(
+          `Found CODEOWNERS file at ${data.path} in ${this.baseBranch}, but expected ${location}`
+        );
+      }
+
+      return {
+        content: Buffer.from(data.content, 'base64').toString(),
+        location: data.path,
+      };
     }
 
     return { content: null, location: null };

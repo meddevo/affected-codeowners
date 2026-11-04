@@ -5,12 +5,24 @@ import { parseFile } from './codeowners/parse-file.js';
 import { findMatchingCodeOwners } from './filename-match.js';
 
 export async function run() {
+  // Always valid JSON, so `fromJSON()` on the outputs works even when we skip
+  setOutput('grouped-owners', '[]');
+  setOutput('individual-owners', '[]');
+
   try {
     const github = new GitHubService(getInput('token'), context);
 
     const { content: codeownersContent, location: codeownersLocationGuessed } =
       await github.getCodeownersFile();
 
+    if (codeownersContent === null) {
+      info('No CODEOWNERS file found, skipping codeowners check');
+      return;
+    }
+
+    info(`CODEOWNERS file found at ${codeownersLocationGuessed}`);
+
+    // Must run after the file check: this endpoint 404s when there is no CODEOWNERS file
     const { lines: codeownersErrors, location: codeownersLocationActual } =
       await github.getCodeownersErrors();
 
@@ -22,16 +34,6 @@ export async function run() {
         `CODEOWNERS guessed file location does not match with actual location: ${codeownersLocationGuessed} !== ${codeownersLocationActual}`
       );
     }
-
-    setOutput('grouped-owners', '');
-    setOutput('individual-owners', '');
-
-    if (!codeownersContent) {
-      info('No CODEOWNERS file found, skipping codeowners check');
-      return;
-    }
-
-    info(`CODEOWNERS file found at ${codeownersLocationGuessed}`);
 
     const changedFilePaths = await github.listChangedFiles();
 
@@ -52,7 +54,7 @@ export async function run() {
     setOutput('grouped-owners', JSON.stringify(owners.grouped));
     setOutput('individual-owners', JSON.stringify(owners.individual));
   } catch (error) {
-    // Fail the workflow run if an error occurs
-    if (error instanceof Error) setFailed(error.message);
+    // Fail the workflow run on any error, including non-Error throws
+    setFailed(error instanceof Error ? error.message : String(error));
   }
 }

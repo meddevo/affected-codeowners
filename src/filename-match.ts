@@ -66,7 +66,7 @@ export const findMatchingCodeOwners = (
     ...new Set(
       foundOwners
         .filter((owners) => owners.length > 0)
-        .map((ownerGroup) => JSON.stringify(ownerGroup.sort()))
+        .map((ownerGroup) => JSON.stringify([...ownerGroup].sort()))
     ),
   ].map((group) => JSON.parse(group));
 
